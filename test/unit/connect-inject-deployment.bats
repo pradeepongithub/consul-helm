@@ -937,7 +937,7 @@ load _helpers
   [ "${actual}" = "true" ]
 
   local actual=$(echo "$cmd" |
-    yq 'any(contains("-init-container-memory-limit=125Mi"))' | tee /dev/stderr)
+    yq 'any(contains("-init-container-memory-limit=150Mi"))' | tee /dev/stderr)
   [ "${actual}" = "true" ]
 
   local actual=$(echo "$cmd" |
@@ -953,22 +953,23 @@ load _helpers
   [ "${actual}" = "true" ]
 
   local actual=$(echo "$cmd" |
-    yq 'any(contains("-lifecycle-sidecar-memory-limit=25Mi"))' | tee /dev/stderr)
+    yq 'any(contains("-lifecycle-sidecar-memory-limit=50Mi"))' | tee /dev/stderr)
   [ "${actual}" = "true" ]
 
   local actual=$(echo "$cmd" |
     yq 'any(contains("-lifecycle-sidecar-cpu-limit=20m"))' | tee /dev/stderr)
   [ "${actual}" = "true" ]
 }
+
 @test "connectInject/Deployment: can set init container resources" {
   cd `chart_dir`
   local cmd=$(helm template \
       -s templates/connect-inject-deployment.yaml \
       --set 'connectInject.enabled=true' \
-      --set 'global.initContainer.resources.requests.memory=100Mi' \
-      --set 'global.initContainer.resources.requests.cpu=100m' \
-      --set 'global.initContainer.resources.limits.memory=200Mi' \
-      --set 'global.initContainer.resources.limits.cpu=200m' \
+      --set 'connectInject.initContainer.resources.requests.memory=100Mi' \
+      --set 'connectInject.initContainer.resources.requests.cpu=100m' \
+      --set 'connectInject.initContainer.resources.limits.memory=200Mi' \
+      --set 'connectInject.initContainer.resources.limits.cpu=200m' \
       . | tee /dev/stderr |
       yq '.spec.template.spec.containers[0].command' | tee /dev/stderr)
 
